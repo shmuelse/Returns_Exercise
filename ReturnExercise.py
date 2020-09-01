@@ -50,3 +50,7 @@ cursor.execute("""CREATE TABLE vans (
 )
 """)
 
+# commit our command
+connection.commit()
+# close our connection
+connection.close()
