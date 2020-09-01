@@ -50,5 +50,3 @@ cursor.execute("""CREATE TABLE vans (
 )
 """)
 
-
-
