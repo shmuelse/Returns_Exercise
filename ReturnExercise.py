@@ -10,6 +10,24 @@ import sqlite3
 #     print(my_data)
 
 
+# connect to database
+connection = sqlite3.connect('returns.db')
+
+# create a cursor
+cursor = connection.cursor()
+
+
+
+cursor.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")
+available_table = (cursor.fetchall())
+print(available_table)
+
+
+# commit our command
+connection.commit()
+# close our connection
+connection.close()
+
 # CREATE
 def add_customer(customer):
     # connect to database
