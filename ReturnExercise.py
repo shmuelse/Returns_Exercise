@@ -42,13 +42,24 @@ cursor.execute("""CREATE TABLE drivers (
 """)
 
 # create Consignments table
-cursor.execute("""CREATE TABLE vans (
+cursor.execute("""CREATE TABLE Consignments (
     barcode TEXT PRIMARY KEY,
     driver_ID INTEGER,
     date_of_return TEXT,
     active TEXT
 )
 """)
+
+# create Vans table
+cursor.execute("""CREATE TABLE vans (
+    van_ID INTEGER PRIMARY KEY,
+    driver_ID INTEGER,
+    geo_area TEXT,
+    branch TEXT,
+    active TEXT
+)
+""")
+
 
 # commit our command
 connection.commit()
