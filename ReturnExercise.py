@@ -68,7 +68,7 @@ def add_consignment(consignment):
     cursor = connection.cursor()
 
     # add the customer to the table
-    cursor.execute("INSERT INTO vans VALUES (?,?,?,?)", consignment)
+    cursor.execute("INSERT INTO vans VALUES (?,?,?,?,?)", consignment)
 
     # commit our command
     connection.commit()
@@ -218,6 +218,11 @@ def get_customer_details_by_id(customer_id_):
     connection.close()
 
     return to_ret
+
+
+
+
+
 
 
 # UPDATE
@@ -375,3 +380,4 @@ def delete_consignment_from_db(consignment_to_delete):
     connection.commit()
     # close our connection
     connection.close()
+
