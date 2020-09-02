@@ -45,10 +45,12 @@ cursor.execute("""CREATE TABLE drivers (
 cursor.execute("""CREATE TABLE Consignments (
     barcode TEXT PRIMARY KEY,
     driver_ID INTEGER,
+    customer_id INTEGER,
     date_of_return TEXT,
     returned TEXT,
     active TEXT,
-    FOREIGN KEY (driver_ID) REFERENCES drivers(driver_ID)
+    FOREIGN KEY (driver_ID) REFERENCES drivers(driver_ID),
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 )
 """)
 
