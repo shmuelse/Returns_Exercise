@@ -46,7 +46,8 @@ cursor.execute("""CREATE TABLE Consignments (
     barcode TEXT PRIMARY KEY,
     driver_ID INTEGER,
     date_of_return TEXT,
-    active TEXT
+    active TEXT,
+    FOREIGN KEY (driver_ID) REFERENCES drivers(driver_ID)
 )
 """)
 
@@ -56,7 +57,8 @@ cursor.execute("""CREATE TABLE vans (
     driver_ID INTEGER,
     geo_area TEXT,
     branch TEXT,
-    active TEXT
+    active TEXT,
+    FOREIGN KEY (driver_ID) REFERENCES drivers(driver_ID)
 )
 """)
 
