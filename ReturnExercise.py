@@ -88,7 +88,7 @@ def get_all_drivers_from_branch(branch_):
     cursor.execute("""
     SELECT first_name, last_name 
     FROM drivers 
-    WHERE branch = %(branch_)""", {"branch_": branch_})
+    WHERE branch = %(branch_)s""", {"branch_": branch_})
 
     to_ret = cursor.fetchall()
 
@@ -111,7 +111,7 @@ def get_driver_details_by_id(driver_id):
     cursor.execute("""
        SELECT first_name, last_name, phone_number, email_address, branch 
        FROM drivers 
-       WHERE driver_id = %(driver_id) 
+       WHERE driver_id = %(driver_id)s 
        AND active = 'Y' """, {"driver_id": driver_id})
 
     to_ret = cursor.fetchall()
@@ -135,7 +135,7 @@ def get_drivers_details_by_first_name(driver_name):
     cursor.execute("""
        SELECT first_name, last_name, phone_number, email_address, branch 
        FROM drivers 
-       WHERE first_name = %(driver_name) 
+       WHERE first_name = %(driver_name)s 
        AND active = 'Y' """, {"driver_name": driver_name})
 
     to_ret = cursor.fetchall()
@@ -159,7 +159,7 @@ def get_customers_details_by_geo(geo_area_):
     cursor.execute("""
        SELECT first_name, last_name, phone_number, email_address, address, geo_area 
        FROM customers 
-       WHERE geo_area = %(geo_area_) 
+       WHERE geo_area = %(geo_area_)s
        AND active = 'Y' """, {"geo_area_": geo_area_})
 
     to_ret = cursor.fetchall()
@@ -183,7 +183,7 @@ def get_customers_details_by_address(address_):
     cursor.execute("""
          SELECT first_name, last_name, phone_number, email_address, address, geo_area 
          FROM customers 
-         WHERE address = %(address_) 
+         WHERE address = %(address_)s 
          AND active = 'Y' """, {"address_": address_})
 
     to_ret = cursor.fetchall()
@@ -207,7 +207,7 @@ def get_customer_details_by_id(customer_id_):
     cursor.execute("""
            SELECT first_name, last_name, phone_number, email_address, address, geo_area 
            FROM customers 
-           WHERE customer_id_ = %(customer_id_) 
+           WHERE customer_id_ = %(customer_id_)s 
            AND active = 'Y' """, {"customer_id_": customer_id_})
 
     to_ret = cursor.fetchall()
@@ -220,9 +220,97 @@ def get_customer_details_by_id(customer_id_):
     return to_ret
 
 
+def get_all_drivers_who_drove_a_specific_van(van_id):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    cursor.execute("""
+      SELECT first_name, last_name
+      FROM drivers
+      WHERE driver_ID  IN (SELECT driver_ID 
+      FROM vans 
+      WHERE %(van_id))s = %(van_id)s""", {"van_id": van_id})
+
+    to_ret = cursor.fetchall()
+
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+    return to_ret
 
 
+def get_all_vans_id_belonging_to_particular_geo_area(geo_area_):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
 
+    # create a cursor
+    cursor = connection.cursor()
+
+    cursor.execute("""
+      SELECT van_ID
+      FROM vans
+      WHERE geo_area = %(geo_area_)s""", {"geo_area_": geo_area_})
+
+    to_ret = cursor.fetchall()
+
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+    return to_ret
+
+
+def get_all_vans_id_belonging_to_specific_branch(branch_):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    # get all the drivers that work on a specific branch
+    cursor.execute("""
+      SELECT van_ID
+      FROM vans
+      WHERE branch = %(branch_)s""", {"branch_": branch_})
+
+    to_ret = cursor.fetchall()
+
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+    return to_ret
+
+
+def get_drivers_who_drove_in_specific_geo_area(geo_area_):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT first_name, last_name
+        FROM drivers
+        WHERE driver_ID  IN (SELECT driver_ID 
+        FROM vans 
+        WHERE %(geo_area))s = %(geo_area_)s""", {"geo_area_": geo_area_})
+
+    to_ret = cursor.fetchall()
+
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+    return to_ret
 
 
 # UPDATE
@@ -292,7 +380,7 @@ def update_user_details(item_to_update, item, id_key, user_type):
     connection.close()
 
 
-def update_consignment_return_date(date, barcode_):
+def update_consignment_return(date, barcode_):
     # connect to database
     connection = sqlite3.connect('returns.db')
     # create a cursor
@@ -300,7 +388,7 @@ def update_consignment_return_date(date, barcode_):
 
     cursor.execute("""
                 UPDATE consignments 
-                SET date_of_return = %(date)s 
+                SET date_of_return = %(date)s, returned = 'Y' 
                 WHERE barcode = %(barcode_)s 
                 AND active = 'Y'""", {'date': date, 'barcode_': barcode_})
     # commit our command
@@ -373,7 +461,7 @@ def delete_consignment_from_db(consignment_to_delete):
     # mark consignment as no active
     cursor.execute("""
                    UPDATE consignments 
-                   SET barcode = 'N'
+                   SET active = 'N'
                    WHERE van_ID = %(consignment_to_delete)s
                    AND active != 'N'""", {'consignment_to_delete': consignment_to_delete})
     # commit our command
