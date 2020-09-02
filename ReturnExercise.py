@@ -313,6 +313,8 @@ def get_drivers_who_drove_in_specific_geo_area(geo_area_):
     return to_ret
 
 
+
+
 # UPDATE
 def update_user_details(item_to_update, item, id_key, user_type):
     # connect to database
