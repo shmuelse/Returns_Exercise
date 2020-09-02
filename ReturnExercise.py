@@ -148,6 +148,78 @@ def get_drivers_details_by_first_name(driver_name):
     return to_ret
 
 
+def get_customers_details_by_geo(geo_area_):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    # get all driver driver details by driver id
+    cursor.execute("""
+       SELECT first_name, last_name, phone_number, email_address, address, geo_area 
+       FROM customers 
+       WHERE geo_area = %(geo_area_) 
+       AND active = 'Y' """, {"geo_area_": geo_area_})
+
+    to_ret = cursor.fetchall()
+
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+    return to_ret
+
+
+def get_customers_details_by_address(address_):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    # get all driver driver details by driver id
+    cursor.execute("""
+         SELECT first_name, last_name, phone_number, email_address, address, geo_area 
+         FROM customers 
+         WHERE address = %(address_) 
+         AND active = 'Y' """, {"address_": address_})
+
+    to_ret = cursor.fetchall()
+
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+    return to_ret
+
+
+def get_customer_details_by_id(customer_id_):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    # get all driver driver details by driver id
+    cursor.execute("""
+           SELECT first_name, last_name, phone_number, email_address, address, geo_area 
+           FROM customers 
+           WHERE customer_id_ = %(customer_id_) 
+           AND active = 'Y' """, {"customer_id_": customer_id_})
+
+    to_ret = cursor.fetchall()
+
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+    return to_ret
+
+
 # UPDATE
 def update_user_details(item_to_update, item, id_key, user_type):
     # connect to database
