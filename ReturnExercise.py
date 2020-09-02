@@ -68,7 +68,7 @@ def add_consignment(consignment):
     cursor = connection.cursor()
 
     # add the customer to the table
-    cursor.execute("INSERT INTO vans VALUES (?,?,?,?,?)", consignment)
+    cursor.execute("INSERT INTO vans VALUES (?,?,?,?,?,?)", consignment)
 
     # commit our command
     connection.commit()
@@ -277,7 +277,8 @@ def get_all_vans_id_belonging_to_specific_branch(branch_):
     cursor.execute("""
       SELECT van_ID
       FROM vans
-      WHERE branch = %(branch_)s""", {"branch_": branch_})
+      WHERE branch = %(branch_)s 
+      AND active = 'Y'""", {"branch_": branch_})
 
     to_ret = cursor.fetchall()
 
@@ -299,9 +300,82 @@ def get_drivers_who_drove_in_specific_geo_area(geo_area_):
     cursor.execute("""
         SELECT first_name, last_name
         FROM drivers
-        WHERE driver_ID  IN (SELECT driver_ID 
+        WHERE active = 'Y' 
+        AND driver_ID  IN (SELECT driver_ID 
         FROM vans 
         WHERE %(geo_area))s = %(geo_area_)s""", {"geo_area_": geo_area_})
+
+    to_ret = cursor.fetchall()
+
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+    return to_ret
+
+
+def get_all_returned_consignments_id_in_date_range(date_start, date_end):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    cursor.execute("""
+          SELECT barcode
+          FROM consignments
+          WHERE date_of_return >= %(date_start)s 
+          AND date_of_return <= %(date_end)s
+          AND returned = 'Y'
+          AND active = 'Y'""", {'date_start': date_start, 'date_end': date_end})
+
+    to_ret = cursor.fetchall()
+
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+    return to_ret
+
+
+def get_all_returned_consignments_id_that_returned_to_specific_customer(customer_id_):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    cursor.execute("""
+             SELECT barcode
+             FROM consignments
+             WHERE customer_id = %(customer_id_)s 
+             AND returned = 'Y'
+             AND active = 'Y'""", {'customer_id_': customer_id_})
+
+    to_ret = cursor.fetchall()
+
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+    return to_ret
+
+
+def get_the_consignments_id_that_are_not_already_returned():
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    cursor.execute("""
+               SELECT barcode
+               FROM consignments
+               WHERE returned = 'Y' 
+               AND active = 'Y'""",)
 
     to_ret = cursor.fetchall()
 
@@ -380,7 +454,7 @@ def update_user_details(item_to_update, item, id_key, user_type):
     connection.close()
 
 
-def update_consignment_return(date, barcode_):
+def update_consignment_returned(date, barcode_):
     # connect to database
     connection = sqlite3.connect('returns.db')
     # create a cursor
@@ -391,6 +465,40 @@ def update_consignment_return(date, barcode_):
                 SET date_of_return = %(date)s, returned = 'Y' 
                 WHERE barcode = %(barcode_)s 
                 AND active = 'Y'""", {'date': date, 'barcode_': barcode_})
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+
+def update_van_geo_area(van_id, new_geo):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+    # create a cursor
+    cursor = connection.cursor()
+
+    cursor.execute("""
+                   UPDATE vans 
+                   SET geo_area = %(new_geo)s 
+                   WHERE van_ID = %(van_id)s 
+                   AND active = 'Y'""", {'new_geo': new_geo, 'van_id': van_id})
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+
+def update_van_branch(van_id, new_branch):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+    # create a cursor
+    cursor = connection.cursor()
+
+    cursor.execute("""
+                    UPDATE vans 
+                    SET geo_area = %(new_branch)s 
+                    WHERE van_ID = %(van_id)s 
+                    AND active = 'Y'""", {'new_branch': new_branch, 'van_id': van_id})
     # commit our command
     connection.commit()
     # close our connection
