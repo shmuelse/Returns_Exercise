@@ -1,16 +1,6 @@
 import sqlite3
 
 
-# import cv2
-# import numpy as np
-# from pyzbar.pyzbar import decode
-#
-# img = cv2.imread('frame.png')
-# for barcode in decode(img):
-#     my_data = barcode.data.decode('utf-8')
-#     print(my_data)
-
-
 # CREATE
 def add_customer(customer):
     # connect to database
