@@ -1,4 +1,4 @@
-import ReturnExercise
+import Dl
 import cv2
 import numpy as np
 from pyzbar.pyzbar import decode
@@ -41,19 +41,19 @@ def read_barcode(file_name):
 
 
 def add_new_customer(f_name, l_name, e_address, p_num, address, geo_area):
-    ReturnExercise.add_customer([(customer_id_gen(), f_name, l_name, e_address, p_num, address, geo_area, 'Y')])
+    Dl.add_customer([(customer_id_gen(), f_name, l_name, e_address, p_num, address, geo_area, 'Y')])
 
 
 def add_new_driver(f_name, l_name, p_number, e_address, branch):
-    ReturnExercise.add_driver([(driver_id_gen(), f_name, l_name, p_number, e_address, branch, 'Y')])
+    Dl.add_driver([(driver_id_gen(), f_name, l_name, p_number, e_address, branch, 'Y')])
 
 
 def add_new_van(driver_id ,geo_area, branch):
-    ReturnExercise.add_van([(van_id_gen(), driver_id, geo_area, branch, 'Y')])
+    Dl.add_van([(van_id_gen(), driver_id, geo_area, branch, 'Y')])
 
 
 def add_new_consignment(driver_id, geo_area, branch):
-    ReturnExercise.add_consignment([(consignment_id_and_barcode_gen(), driver_id, geo_area, branch, 'Y')])
+    Dl.add_consignment([(consignment_id_and_barcode_gen(), driver_id, geo_area, branch, 'Y')])
 
 
 
