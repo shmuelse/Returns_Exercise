@@ -1,8 +1,33 @@
 import Dl
 import cv2
-import numpy as np
-from pyzbar.pyzbar import decode
 import pyqrcode
+import requests
+from urllib.parse import urlencode
+from pyzbar.pyzbar import decode
+
+apiKey = "Insert_Your_API_here"
+
+# data_type = 'json'
+# endpoint = f"https://maps.googleapis.com/maps/api/geocode/{data_type}"
+# params = {"address": "1600 Amphitheatre Parkway, Mountain View, CA", "key": apiKey}
+# url_params = urlencode(params)
+# sample = "https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=YOUR_API_KEY"
+
+
+def extract_geo_area(address_or_geo_area, data_type='json'):
+    endpoint = f"https://maps.googleapis.com/maps/api/geocode/{data_type}"
+    params = {"address": address_or_geo_area, "key": apiKey}
+    url_params = urlencode(params)
+    url = f"{endpoint}?{url_params}"
+    r = requests.get(url)
+    if r.status_code not in range(200, 299):
+        return {}
+    geo_area = {}
+    try:
+        geo_area = r.json()['results'][0]['address_components'][3]
+    except:
+        pass
+    return geo_area.get("long_name")
 
 
 def customer_id_gen():
@@ -48,12 +73,13 @@ def add_new_driver(f_name, l_name, p_number, e_address, branch):
     Dl.add_driver([(driver_id_gen(), f_name, l_name, p_number, e_address, branch, 'Y')])
 
 
-def add_new_van(driver_id ,geo_area, branch):
+def add_new_van(driver_id, geo_area, branch):
     Dl.add_van([(van_id_gen(), driver_id, geo_area, branch, 'Y')])
 
 
-def add_new_consignment(driver_id, geo_area, branch):
-    Dl.add_consignment([(consignment_id_and_barcode_gen(), driver_id, geo_area, branch, 'Y')])
+def add_new_consignment(van_id, geo_area, branch):
+    Dl.add_consignment([(consignment_id_and_barcode_gen(), van_id, geo_area, branch, 'Y')])
+
 
 
 

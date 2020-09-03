@@ -1,4 +1,5 @@
 import sqlite3
+import pandas as pd
 
 
 # CREATE
@@ -339,7 +340,7 @@ def get_all_returned_consignments_id_that_returned_to_specific_customer(customer
 
     cursor.execute("""
              SELECT barcode
-             FROM consignments
+             FROM Consignments
              WHERE customer_id = %(customer_id_)s 
              AND returned = 'Y'
              AND active = 'Y'""", {'customer_id_': customer_id_})
@@ -375,6 +376,18 @@ def get_the_consignments_id_that_are_not_already_returned():
     connection.close()
 
     return to_ret
+
+
+def get_consignments_on_each_van():
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+    sql = """
+    SELECT van_ID, barcode FROM  Consignments
+    """
+    df = pd.read_sql_query(sql, connection)
+    df_agg = df.groupby(['van_ID', 'barcode']).count()
+    df_agg.sort_values('van_Id', ascending=True)
+    df_agg.to_csv('package_on_van.csv')
 
 
 # UPDATE
