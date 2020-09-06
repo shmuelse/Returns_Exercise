@@ -17,7 +17,7 @@ from math import *
 
 
 def get_api_key():
-    with open('customer_id.txt', 'r+') as api_key:
+    with open('API_KEY.txt', 'r+') as api_key:
         return str(api_key.read())
 
 
@@ -58,8 +58,11 @@ def extract_address(address_or_geo_area, data_type='json'):
         zip_code = r.json()['results'][0]['address_components'][7]
     except:
         pass
-    return street_number.get("short_name"), route.get("short_name"), geo_area.get("short_name"), state.get(
-        "short_name"), zip_code.get("short_name")
+    return street_number.get("short_name"), \
+           route.get("short_name"), \
+           geo_area.get("short_name"), \
+           state.get("short_name"), \
+           zip_code.get("short_name")
 
 
 # def calc_distance(lat_1, lon_1, lat_2, lon_2):
@@ -96,7 +99,7 @@ def shortest_distance(origin, destination, data_type='json'):
     return driving_time
 
 
-# s = extract_address("520 maple street brooklyn ny")
+# s = extract_address("5901 Myrtle Ave, Ridgewood, NY 11385")
 # print(' '.join([str(elem) for elem in s]))
 
 
@@ -169,22 +172,45 @@ def read_barcode(file_name):
 
 
 # CREATE
-def add_new_customer(f_name, l_name, e_address, p_num, address, geo_area):
-    Dl.add_customer([(customer_id_gen(), f_name, l_name, e_address, p_num, address, geo_area, 'Y')])
+def add_new_customer(f_name, l_name, e_address, p_num, address):
+    Dl.add_customer(
+        int(customer_id_gen()),
+        str(f_name),
+        str(l_name),
+        str(e_address),
+        str(p_num),
+        str(extract_address(address)),
+        str(extract_geo_area(address)),
+        'Y'
+    )
 
 
 def add_new_driver(f_name, l_name, p_number, e_address, branch):
-    Dl.add_driver([driver_id_gen(), f_name, l_name, p_number, e_address, branch, 'Y'])
+    Dl.add_driver(
+        int(driver_id_gen()),
+        str(f_name),
+        str(l_name),
+        str(p_number),
+        str(e_address),
+        str(branch),
+        'Y'
+    )
 
 
 def add_new_van(driver_id, geo_area, branch):
     Dl.add_van([(van_id_gen(), driver_id, geo_area, branch, 'Y')])
 
 
-def add_new_consignment(van_id, customer_id, date_of_return, is_returned):
-    Dl.add_consignment([(consignment_id_and_barcode_gen(), van_id, customer_id, date_of_return, is_returned, 'Y')])
+def add_new_consignment(customer_id):
+    Dl.add_consignment(
+        [(consignment_id_and_barcode_gen(), select_van_for_consignment(customer_id), customer_id, 'EMPTY', 'NO', 'Y')])
 
 
 def get_consignments_van_location_to_csv_file():
     return Dl.get_consignments_van_location_to_csv_file()
 
+
+def select_van_for_consignment(customer_id):
+    customer_geo_area = Dl.get_customer_geo_area_by_id(customer_id)
+    get_van = Dl.get_all_vans_id_belonging_to_particular_geo_area(customer_geo_area)
+    return get_van[0]

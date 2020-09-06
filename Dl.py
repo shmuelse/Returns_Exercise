@@ -3,7 +3,7 @@ import pandas as pd
 
 
 # CREATE
-def add_customer(customer):
+def add_customer(customer_id, f_name, l_name, e_address, p_num, address, g_area, active):
     # connect to database
     connection = sqlite3.connect('returns.db')
 
@@ -15,14 +15,15 @@ def add_customer(customer):
     (customer_id , first_name, last_name, email_address, phone_number, address, geo_area, active)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?);"""
 
-    cursor.execute(param_to_insert, customer)
+    data_tuple = (customer_id, f_name, l_name, e_address, p_num, address, g_area, active)
+    cursor.execute(param_to_insert, data_tuple)
     # commit our command
     connection.commit()
     # close our connection
     connection.close()
 
 
-def add_driver(driver):
+def add_driver(driver_id, f_name, l_name, p_num, e_address, branch, active):
     # connect to database
     connection = sqlite3.connect('returns.db')
 
@@ -32,10 +33,10 @@ def add_driver(driver):
     # add the customer to the table
     param_to_insert = """INSERT INTO drivers
                    (driver_ID, first_name, last_name, phone_number, email_address, branch, active) 
-                   VALUES
-                   (?, ?, ?, ?, ?, ?, ?);"""
+                   VALUES (?, ?, ?, ?, ?, ?, ?);"""
 
-    cursor.execute(param_to_insert, driver)
+    data_tuple = (driver_id, f_name, l_name, p_num, e_address, branch, active)
+    cursor.execute(param_to_insert, data_tuple)
 
     # commit our command
     connection.commit()
@@ -92,7 +93,7 @@ def get_all_drivers_from_branch(branch_):
 
     # get all the drivers that work on a specific branch
     select_query = """SELECT * FROM drivers where branch = ?"""
-    cursor.execute(select_query, (branch_, ))
+    cursor.execute(select_query, (branch_,))
     records = cursor.fetchall()
     to_ret = None
     for row in records:
@@ -218,8 +219,26 @@ def get_customer_details_by_id(customer_id_):
 
     to_ret = cursor.fetchall()
 
-    # commit our command
-    connection.commit()
+    # close our connection
+    connection.close()
+
+    return to_ret
+
+
+def get_customer_geo_area_by_id(customer_id_):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    param = """
+           SELECT geo_area 
+           FROM customers 
+           WHERE customer_id_ = %(customer_id_)s 
+           AND active = 'Y' """, {"customer_id_": customer_id_}
+
+    to_ret = cursor.fetchone()
     # close our connection
     connection.close()
 
@@ -381,7 +400,7 @@ def get_the_consignments_id_that_are_not_already_returned():
                SELECT barcode
                FROM consignments
                WHERE returned = 'Y' 
-               AND active = 'Y'""",)
+               AND active = 'Y'""", )
 
     to_ret = cursor.fetchall()
 
@@ -594,4 +613,3 @@ def delete_consignment_from_db(consignment_to_delete):
     connection.commit()
     # close our connection
     connection.close()
-
