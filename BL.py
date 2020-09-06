@@ -148,4 +148,3 @@ def add_new_consignment(van_id, geo_area, branch):
     Dl.add_consignment([(consignment_id_and_barcode_gen(), van_id, geo_area, branch, 'Y')])
 
 
-add_new_driver('john', 'gross', '2026567700', "john@ldtglobal.com", 'Brooklyn')

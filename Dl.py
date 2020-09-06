@@ -11,8 +11,11 @@ def add_customer(customer):
     cursor = connection.cursor()
 
     # add the customer to the table
-    cursor.execute("INSERT INTO customers (?,?,?,?,?,?,?,?)", customer)
+    param_to_insert = """INSERT INTO customers 
+    (customer_id , first_name, last_name, email_address, phone_number, address, geo_area, active)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?);"""
 
+    cursor.execute(param_to_insert, customer)
     # commit our command
     connection.commit()
     # close our connection
@@ -27,10 +30,12 @@ def add_driver(driver):
     cursor = connection.cursor()
 
     # add the customer to the table
-    cursor.execute("""INSERT INTO drivers
+    param_to_insert = """INSERT INTO drivers
                    (driver_ID, first_name, last_name, phone_number, email_address, branch, active) 
                    VALUES
-                   ((@(driver[0])s, @(driver[1])s, @(driver[2])s, @(driver[3])s, @(driver[4])s, @(driver[5])s, @(driver[6])s)""", {"@(driver)s": driver})
+                   (?, ?, ?, ?, ?, ?, ?);"""
+
+    cursor.execute(param_to_insert, driver)
 
     # commit our command
     connection.commit()
@@ -46,7 +51,11 @@ def add_van(van):
     cursor = connection.cursor()
 
     # add the customer to the table
-    cursor.execute("INSERT INTO vans VALUES (?,?,?,?,?,?,?)", van)
+    param_to_insert = """INSERT INTO vans
+     (van_ID, driver_ID, geo_area, branch, active)
+     VALUES (?, ?, ?, ?, ?);"""
+
+    cursor.execute(param_to_insert, van)
 
     # commit our command
     connection.commit()
@@ -62,7 +71,10 @@ def add_consignment(consignment):
     cursor = connection.cursor()
 
     # add the customer to the table
-    cursor.execute("INSERT INTO vans VALUES (?,?,?,?,?,?)", consignment)
+    param_to_insert = """INSERT INTO consignments
+    (barcode, van_ID, customer_id, date_of_return, returned, active)
+    VALUES (?, ?, ?, ?, ?, ?);"""
+    cursor.execute(param_to_insert, consignment)
 
     # commit our command
     connection.commit()
