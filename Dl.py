@@ -11,7 +11,7 @@ def add_customer(customer):
     cursor = connection.cursor()
 
     # add the customer to the table
-    cursor.execute("INSERT INTO customers VALUES (?,?,?,?,?,?,?,?)", customer)
+    cursor.execute("INSERT INTO customers (?,?,?,?,?,?,?,?)", customer)
 
     # commit our command
     connection.commit()
@@ -27,7 +27,10 @@ def add_driver(driver):
     cursor = connection.cursor()
 
     # add the customer to the table
-    cursor.execute("INSERT INTO drivers VALUES (?,?,?,?,?,?,?)", driver)
+    cursor.execute("""INSERT INTO drivers
+                   (driver_ID, first_name, last_name, phone_number, email_address, branch, active) 
+                   VALUES
+                   ((@(driver[0])s, @(driver[1])s, @(driver[2])s, @(driver[3])s, @(driver[4])s, @(driver[5])s, @(driver[6])s)""", {"@(driver)s": driver})
 
     # commit our command
     connection.commit()
