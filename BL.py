@@ -6,6 +6,8 @@ from urllib.parse import urlencode
 from pyzbar.pyzbar import decode
 import os
 
+from math import *
+
 
 # data_type = 'json'
 # endpoint = f"https://maps.googleapis.com/maps/api/geocode/{data_type}"
@@ -58,6 +60,40 @@ def extract_address(address_or_geo_area, data_type='json'):
         pass
     return street_number.get("short_name"), route.get("short_name"), geo_area.get("short_name"), state.get(
         "short_name"), zip_code.get("short_name")
+
+
+# def calc_distance(lat_1, lon_1, lat_2, lon_2):
+#     def haversin(x):
+#         return sin(x/2)**2
+#     return 2 * asin(sqrt(haversin(lat_2-lat_1) + cos(lat_2) * haversin(lon_2-lon_1)))
+
+
+def shortest_distance(origin, destination, data_type='json'):
+    end_point = f"https://maps.googleapis.com/maps/api/geocode/{data_type}"
+    origin_params = {"address": origin, "key": get_api_key()}
+    destination_params = {"address": destination, "key": get_api_key()}
+    url_params_origin = urlencode(origin_params)
+    url_params_destination = urlencode(destination_params)
+    url_origin = f"{end_point}?{url_params_origin}"
+    url_dest = f"{end_point}?{url_params_destination}"
+    r_o = requests.get(url_origin)
+    r_d = requests.get(url_dest)
+    if r_o.status_code not in range(200, 299) or r_d not in range():
+        return {}
+    latlng_o = {}
+    latlng_d = {}
+    try:
+        latlng_o = r_o.json()['results'][0]['geometry']['location']
+        latlng_d = r_d.json()['results'][0]['geometry']['location']
+    except:
+        pass
+    orig_coord = latlng_o.get("lat"), latlng_o.get("lng")
+    dest_coord = latlng_d.get("lat"), latlng_d.get("lng")
+    url = "http://maps.googleapis.com/maps/api/distancematrix/json?origins={0}&destinations={1}&mode=driving&language=en-EN&sensor=false".format(
+        str(orig_coord), str(dest_coord))
+    result = requests.get(url)
+    driving_time = result['rows'][0]['elements'][0]['duration']['value']
+    return driving_time
 
 
 # s = extract_address("520 maple street brooklyn ny")
@@ -132,6 +168,7 @@ def read_barcode(file_name):
         return my_data
 
 
+# CREATE
 def add_new_customer(f_name, l_name, e_address, p_num, address, geo_area):
     Dl.add_customer([(customer_id_gen(), f_name, l_name, e_address, p_num, address, geo_area, 'Y')])
 
@@ -144,7 +181,10 @@ def add_new_van(driver_id, geo_area, branch):
     Dl.add_van([(van_id_gen(), driver_id, geo_area, branch, 'Y')])
 
 
-def add_new_consignment(van_id, geo_area, branch):
-    Dl.add_consignment([(consignment_id_and_barcode_gen(), van_id, geo_area, branch, 'Y')])
+def add_new_consignment(van_id, customer_id, date_of_return, is_returned):
+    Dl.add_consignment([(consignment_id_and_barcode_gen(), van_id, customer_id, date_of_return, is_returned, 'Y')])
 
+
+def get_consignments_van_location_to_csv_file():
+    return Dl.get_consignments_van_location_to_csv_file()
 

@@ -91,18 +91,18 @@ def get_all_drivers_from_branch(branch_):
     cursor = connection.cursor()
 
     # get all the drivers that work on a specific branch
-    cursor.execute("""
-    SELECT first_name, last_name 
-    FROM drivers 
-    WHERE branch = %(branch_)s""", {"branch_": branch_})
+    select_query = """SELECT * FROM drivers where branch = ?"""
+    cursor.execute(select_query, (branch_, ))
+    records = cursor.fetchall()
+    to_ret = None
+    for row in records:
+        to_ret += ("first name = ", row[1])
+        to_ret += ("last name = ", row[2])
+        to_ret += ("phone number = ", row[3])
+    cursor.close()
 
-    to_ret = cursor.fetchall()
-
-    # commit our command
-    connection.commit()
     # close our connection
     connection.close()
-
     return to_ret
 
 
@@ -393,7 +393,7 @@ def get_the_consignments_id_that_are_not_already_returned():
     return to_ret
 
 
-def get_consignments_on_each_van():
+def get_consignments_van_location_to_csv_file():
     # connect to database
     connection = sqlite3.connect('returns.db')
     sql = """
