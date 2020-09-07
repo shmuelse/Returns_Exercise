@@ -44,7 +44,7 @@ def add_driver(driver_id, f_name, l_name, p_num, e_address, branch, active):
     connection.close()
 
 
-def add_van(van):
+def add_van(v_id, d_id, g_area, branch, active):
     # connect to database
     connection = sqlite3.connect('returns.db')
 
@@ -52,11 +52,13 @@ def add_van(van):
     cursor = connection.cursor()
 
     # add the customer to the table
-    param_to_insert = """INSERT INTO vans
-     (van_ID, driver_ID, geo_area, branch, active)
+    param_to_insert = """
+    INSERT INTO vans 
+    (    van_ID, driver_ID, geo_area, branch, active)
      VALUES (?, ?, ?, ?, ?);"""
 
-    cursor.execute(param_to_insert, van)
+    data_tuple = (v_id, d_id, g_area, branch, active)
+    cursor.execute(param_to_insert, data_tuple)
 
     # commit our command
     connection.commit()

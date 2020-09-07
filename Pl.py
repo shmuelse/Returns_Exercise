@@ -28,10 +28,9 @@ def add_to_db(val):
             BL.add_new_driver(f_name, l_name, p_number, e_address, branch)
             val = input(input_str)
         elif val == 3:
-            driver_id = input('driver ID')
             geo_area = input('geo_area')
             branch = input('branch')
-            BL.add_new_van(driver_id, geo_area, branch)
+            BL.add_new_van(geo_area, branch)
             val = input(input_str)
         elif val == 4:
             customer_id = input('customer id')
