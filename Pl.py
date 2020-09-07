@@ -18,7 +18,7 @@ def add_to_db(val):
             e_address = Utiles.is_email_correct(input('email address'))
             address = input('address')
             BL.add_new_customer(f_name, l_name, e_address, p_number, address)
-            val = input(input_str)
+            val = int(input(input_str))
         elif val == 2:
             f_name = input('first name')
             l_name = input('last name')
@@ -26,16 +26,15 @@ def add_to_db(val):
             e_address = Utiles.is_email_correct(input('email address'))
             branch = input('branch')
             BL.add_new_driver(f_name, l_name, p_number, e_address, branch)
-            val = input(input_str)
+            val = int(input(input_str))
         elif val == 3:
-            geo_area = input('geo_area')
             branch = input('branch')
-            BL.add_new_van(geo_area, branch)
-            val = input(input_str)
+            BL.add_new_van(branch)
+            val = int(input(input_str))
         elif val == 4:
             customer_id = input('customer id')
             BL.add_new_consignment(customer_id)
-            val = input(input_str)
+            val = int(input(input_str))
 
 
 print("Welcome To Ldt Global returns system")

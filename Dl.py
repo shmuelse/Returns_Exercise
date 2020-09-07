@@ -54,10 +54,10 @@ def add_van(v_id, d_id, g_area, branch, active):
     # add the customer to the table
     param_to_insert = """
     INSERT INTO vans 
-    (    van_ID, driver_ID, geo_area, branch, active)
+    (van_ID, driver_ID, geo_area, branch, active)
      VALUES (?, ?, ?, ?, ?);"""
 
-    data_tuple = (v_id, d_id, g_area, branch, active)
+    data_tuple = (v_id, d_id[0], g_area, branch, active)
     cursor.execute(param_to_insert, data_tuple)
 
     # commit our command
@@ -107,6 +107,25 @@ def get_all_drivers_from_branch(branch_):
     # close our connection
     connection.close()
     return to_ret
+
+
+def get_all_drivers_ids_by_branch(branch):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    select_query = """SELECT driver_ID FROM drivers where branch = ?"""
+    cursor.execute(select_query, (branch, ))
+    all_ids = cursor.fetchall()
+
+    # commit our command
+    connection.commit()
+    # close our connection
+    connection.close()
+
+    return all_ids
 
 
 def get_driver_details_by_id(driver_id):
@@ -278,13 +297,18 @@ def get_all_vans_id_belonging_to_particular_geo_area(geo_area_):
     # create a cursor
     cursor = connection.cursor()
 
-    cursor.execute("""
+    param_to_select = """
       SELECT van_ID
       FROM vans
-      WHERE geo_area = %(geo_area_)s""", {"geo_area_": geo_area_})
+      WHERE geo_area = ?"""
 
-    to_ret = cursor.fetchall()
+    cursor.execute(param_to_select, geo_area_)
 
+    rows = cursor.fetchall()
+    to_ret = {}
+    for row in rows:
+        to_ret += row
+    print(to_ret)
     # commit our command
     connection.commit()
     # close our connection

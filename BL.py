@@ -197,8 +197,14 @@ def add_new_driver(f_name, l_name, p_number, e_address, branch):
     )
 
 
-def add_new_van(geo_area, branch):
-    Dl.add_van(van_id_gen(), get_driver_id_by_geo_area(geo_area), geo_area, branch, 'Y')
+def add_new_van(branch):
+    Dl.add_van(
+        van_id_gen(),
+        get_driver_id_by_branch(branch),
+        branch,
+        branch,
+        'Y'
+    )
 
 
 def add_new_consignment(customer_id):
@@ -210,9 +216,10 @@ def get_consignments_van_location_to_csv_file():
     return Dl.get_consignments_van_location_to_csv_file()
 
 
-def get_driver_id_by_geo_area(geo_area):
-    drivers = Dl.get_all_vans_id_belonging_to_particular_geo_area(geo_area)
-    return drivers[random.randrange(0,len(drivers))]
+def get_driver_id_by_branch(branch):
+    drivers = Dl.get_all_drivers_ids_by_branch(branch)
+    return drivers[random.randrange(0, len(drivers))]
+
 
 def select_van_for_consignment(customer_id):
     customer_geo_area = Dl.get_customer_geo_area_by_id(customer_id)
