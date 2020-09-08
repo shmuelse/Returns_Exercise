@@ -445,7 +445,7 @@ def get_consignments_van_location_to_csv_file():
             new_csv_file.truncate()
             new_csv_file.write(str(data + 1))
     else:
-        with open('new_csv_file.txt', 'w') as new_csv_file:
+        with open('csv_file_num.txt', 'w') as new_csv_file:
             new_csv_file.write('1')
             data = 1
 
@@ -453,6 +453,20 @@ def get_consignments_van_location_to_csv_file():
     sql = """SELECT barcode, van_ID  FROM consignments;"""
     df = pd.read_sql_query(sql, connect)
     df.to_csv('Consignment_data_' + str(data) + '.csv')
+
+
+def check_if_consignment_returned(barcode):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    sql_query = """SELECT returned FROM Consignments WHERE barcode=?"""
+    return cursor.execute(sql_query, barcode).fetchone()
+
+
+
 
 
 # UPDATE

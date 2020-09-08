@@ -66,12 +66,6 @@ def extract_address(address_or_geo_area, data_type='json'):
            zip_code.get("short_name")
 
 
-# def calc_distance(lat_1, lon_1, lat_2, lon_2):
-#     def haversin(x):
-#         return sin(x/2)**2
-#     return 2 * asin(sqrt(haversin(lat_2-lat_1) + cos(lat_2) * haversin(lon_2-lon_1)))
-
-
 def shortest_distance(origin, destination, data_type='json'):
     end_point = f"https://maps.googleapis.com/maps/api/geocode/{data_type}"
     origin_params = {"address": origin, "key": get_api_key()}
@@ -232,3 +226,12 @@ def select_van_for_consignment(customer_id):
     customer_geo_area = Dl.get_customer_geo_area_by_id(customer_id)
     get_van = Dl.get_all_vans_id_belonging_to_particular_geo_area(customer_geo_area)
     return get_van[random.randrange(0, len(get_van))]
+
+
+def check_if_consignment_returned(barcode_data):
+    # if Dl.check_if_consignment_returned(read_barcode(barcode_data)) == 'Y':
+    if Dl.check_if_consignment_returned(barcode_data) == 'Y':
+        print("The consignment returned to the customer")
+    else:
+        print("The consignment are not yet returned to the customer")
+

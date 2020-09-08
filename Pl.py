@@ -7,6 +7,7 @@ input_str = ("To add a customer press 1\n"
              "To add a van press 3\n"
              "to add a consignment press 4\n"
              "to generate a CSV file with details of which consignments are on each van run press 5\n"
+             "to check if a consignment has returned press 6\n"
              "for exit please press 0")
 
 
@@ -38,6 +39,10 @@ def main(val):
             val = int(input(input_str))
         elif val == 5:
             BL.generate_consignments_van_location_to_csv_file()
+            val = int(input(input_str))
+        elif val == 6:
+            c_id = input('please enter the consignment id')
+            BL.check_if_consignment_returned(c_id)
             val = int(input(input_str))
 
 
