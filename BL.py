@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from pyzbar.pyzbar import decode
 import os
 import random
+import qrcode
 from math import *
 
 
@@ -147,8 +148,8 @@ def van_id_gen():
 
 def consignment_id_and_barcode_gen():
     def create_qr_code(value):
-        qr = pyqrcode.create(value)
-        qr.png(str(value) + '.png', scale=10)
+        qr = qrcode.make(str(value))
+        qr.save(str(value) + '.png', scale=10)
         return value
 
     if os.path.isfile('consignment_id.txt'):
@@ -157,11 +158,11 @@ def consignment_id_and_barcode_gen():
             new_consigment_id.seek(0)
             new_consigment_id.truncate()
             new_consigment_id.write(str(data + 1))
-            create_qr_code(data)
+            return create_qr_code(data)
     else:
         with open('consignment_id.txt', 'w') as new_consigment_id:
             new_consigment_id.write('1')
-            create_qr_code(1)
+            return create_qr_code(1)
 
 
 def read_barcode(file_name):
@@ -209,10 +210,16 @@ def add_new_van(branch):
 
 def add_new_consignment(customer_id):
     Dl.add_consignment(
-        [(consignment_id_and_barcode_gen(), select_van_for_consignment(customer_id), customer_id, 'EMPTY', 'NO', 'Y')])
+        consignment_id_and_barcode_gen(),
+        select_van_for_consignment(customer_id),
+        customer_id,
+        'EMPTY',
+        'NO',
+        'Y'
+    )
 
 
-def get_consignments_van_location_to_csv_file():
+def generate_consignments_van_location_to_csv_file():
     return Dl.get_consignments_van_location_to_csv_file()
 
 
@@ -224,4 +231,4 @@ def get_driver_id_by_branch(branch):
 def select_van_for_consignment(customer_id):
     customer_geo_area = Dl.get_customer_geo_area_by_id(customer_id)
     get_van = Dl.get_all_vans_id_belonging_to_particular_geo_area(customer_geo_area)
-    return get_van[0]
+    return get_van[random.randrange(0, len(get_van))]

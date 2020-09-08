@@ -1,5 +1,6 @@
 import sqlite3
 import pandas as pd
+import os
 
 
 # CREATE
@@ -66,7 +67,7 @@ def add_van(v_id, d_id, g_area, branch, active):
     connection.close()
 
 
-def add_consignment(consignment):
+def add_consignment(barcode, van_id, customer_id, ret_date, is_ret, active):
     # connect to database
     connection = sqlite3.connect('returns.db')
 
@@ -77,7 +78,9 @@ def add_consignment(consignment):
     param_to_insert = """INSERT INTO consignments
     (barcode, van_ID, customer_id, date_of_return, returned, active)
     VALUES (?, ?, ?, ?, ?, ?);"""
-    cursor.execute(param_to_insert, consignment)
+
+    data_tuple = (barcode, van_id[0], customer_id, ret_date, is_ret, active)
+    cursor.execute(param_to_insert, data_tuple)
 
     # commit our command
     connection.commit()
@@ -117,7 +120,7 @@ def get_all_drivers_ids_by_branch(branch):
     cursor = connection.cursor()
 
     select_query = """SELECT driver_ID FROM drivers where branch = ?"""
-    cursor.execute(select_query, (branch, ))
+    cursor.execute(select_query, (branch,))
     all_ids = cursor.fetchall()
 
     # commit our command
@@ -256,9 +259,10 @@ def get_customer_geo_area_by_id(customer_id_):
     param = """
            SELECT geo_area 
            FROM customers 
-           WHERE customer_id_ = %(customer_id_)s 
-           AND active = 'Y' """, {"customer_id_": customer_id_}
+           WHERE customer_id = ? 
+           AND active = 'Y' """
 
+    cursor.execute(param, [customer_id_])
     to_ret = cursor.fetchone()
     # close our connection
     connection.close()
@@ -305,16 +309,11 @@ def get_all_vans_id_belonging_to_particular_geo_area(geo_area_):
     cursor.execute(param_to_select, geo_area_)
 
     rows = cursor.fetchall()
-    to_ret = {}
-    for row in rows:
-        to_ret += row
-    print(to_ret)
     # commit our command
     connection.commit()
     # close our connection
     connection.close()
-
-    return to_ret
+    return rows
 
 
 def get_all_vans_id_belonging_to_specific_branch(branch_):
@@ -439,15 +438,21 @@ def get_the_consignments_id_that_are_not_already_returned():
 
 
 def get_consignments_van_location_to_csv_file():
-    # connect to database
-    connection = sqlite3.connect('returns.db')
-    sql = """
-    SELECT van_ID, barcode FROM  Consignments
-    """
-    df = pd.read_sql_query(sql, connection)
-    df_agg = df.groupby(['van_ID', 'barcode']).count()
-    df_agg.sort_values('van_Id', ascending=True)
-    df_agg.to_csv('package_on_van.csv')
+    if os.path.isfile('csv_file_num.txt'):
+        with open('csv_file_num.txt', 'r+') as new_csv_file:
+            data = int(new_csv_file.read())
+            new_csv_file.seek(0)
+            new_csv_file.truncate()
+            new_csv_file.write(str(data + 1))
+    else:
+        with open('new_csv_file.txt', 'w') as new_csv_file:
+            new_csv_file.write('1')
+            data = 1
+
+    connect = sqlite3.connect('returns.db')
+    sql = """SELECT barcode, van_ID  FROM consignments;"""
+    df = pd.read_sql_query(sql, connect)
+    df.to_csv('Consignment_data_' + str(data) + '.csv')
 
 
 # UPDATE
@@ -639,3 +644,6 @@ def delete_consignment_from_db(consignment_to_delete):
     connection.commit()
     # close our connection
     connection.close()
+
+
+

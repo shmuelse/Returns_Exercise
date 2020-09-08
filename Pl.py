@@ -6,10 +6,11 @@ input_str = ("To add a customer press 1\n"
              "To add a driver press 2\n"
              "To add a van press 3\n"
              "to add a consignment press 4\n"
+             "to generate a CSV file with details of which consignments are on each van run press 5\n"
              "for exit please press 0")
 
 
-def add_to_db(val):
+def main(val):
     while val != 0:
         if val == 1:
             f_name = input('first name')
@@ -35,10 +36,13 @@ def add_to_db(val):
             customer_id = input('customer id')
             BL.add_new_consignment(customer_id)
             val = int(input(input_str))
+        elif val == 5:
+            BL.generate_consignments_van_location_to_csv_file()
+            val = int(input(input_str))
 
 
 print("Welcome To Ldt Global returns system")
-add_to_db(int(input(input_str)))
+main(int(input(input_str)))
 
 
 # main_panel = Tk()
