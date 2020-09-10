@@ -1,4 +1,4 @@
-import BL
+import Bl
 import Utiles
 
 # from tkinter import Tk, Button, Label, Entry, Listbox, MULTIPLE
@@ -8,6 +8,8 @@ input_str = ("To add a customer press 1\n"
              "to add a consignment press 4\n"
              "to generate a CSV file with details of which consignments are on each van run press 5\n"
              "to check if a consignment has returned press 6\n"
+             "to get a route from your location to the customer press 7\n"
+             "to get all drivers who drove a specific van press 8\n"
              "for exit please press 0")
 
 
@@ -19,7 +21,7 @@ def main(val):
             p_number = Utiles.is_correct_phone_num(input('phone number'))
             e_address = Utiles.is_email_correct(input('email address'))
             address = input('address')
-            BL.add_new_customer(f_name, l_name, e_address, p_number, address)
+            Bl.add_new_customer(f_name, l_name, e_address, p_number, address)
             val = int(input(input_str))
         elif val == 2:
             f_name = input('first name')
@@ -27,22 +29,31 @@ def main(val):
             p_number = Utiles.is_correct_phone_num(input('phone number'))
             e_address = Utiles.is_email_correct(input('email address'))
             branch = input('branch')
-            BL.add_new_driver(f_name, l_name, p_number, e_address, branch)
+            Bl.add_new_driver(f_name, l_name, p_number, e_address, branch)
             val = int(input(input_str))
         elif val == 3:
             branch = input('branch')
-            BL.add_new_van(branch)
+            Bl.add_new_van(branch)
             val = int(input(input_str))
         elif val == 4:
             customer_id = input('customer id')
-            BL.add_new_consignment(customer_id)
+            Bl.add_new_consignment(customer_id)
             val = int(input(input_str))
         elif val == 5:
-            BL.generate_consignments_van_location_to_csv_file()
+            Bl.generate_consignments_van_location_to_csv_file()
             val = int(input(input_str))
         elif val == 6:
             c_id = input('please enter the consignment id')
-            BL.check_if_consignment_returned(c_id)
+            Bl.check_if_consignment_returned(c_id)
+            val = int(input(input_str))
+        elif val == 7:
+            print('we are sorry but this function are not yet ready')
+            # origin = input("Type your address location")
+            # dest = input("Enter the customer id")
+            val = int(input(input_str))
+        elif val == 8:
+            van_id = input('please enter the van id')
+            print(Bl.get_all_drivers_who_drove_a_specific_van(van_id))
             val = int(input(input_str))
 
 

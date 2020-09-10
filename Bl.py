@@ -1,13 +1,11 @@
 import Dl
 import cv2
-import pyqrcode
 import requests
 from urllib.parse import urlencode
 from pyzbar.pyzbar import decode
 import os
 import random
 import qrcode
-from math import *
 
 
 # data_type = 'json'
@@ -234,4 +232,14 @@ def check_if_consignment_returned(barcode_data):
         print("The consignment returned to the customer")
     else:
         print("The consignment are not yet returned to the customer")
+
+
+def get_route_to_customer(origin, customer_id):
+    dest = Dl.get_customer_address_by_id(customer_id)
+
+
+def get_all_drivers_who_drove_a_specific_van(van_id):
+    return Dl.get_all_drivers_who_drove_a_specific_van(van_id)
+
+
 

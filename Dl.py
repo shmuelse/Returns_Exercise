@@ -89,7 +89,7 @@ def add_consignment(barcode, van_id, customer_id, ret_date, is_ret, active):
 
 
 # READ
-def get_all_drivers_from_branch(branch_):
+def get_all_drivers_from_branch(branch):
     # connect to database
     connection = sqlite3.connect('returns.db')
 
@@ -98,13 +98,13 @@ def get_all_drivers_from_branch(branch_):
 
     # get all the drivers that work on a specific branch
     select_query = """SELECT * FROM drivers where branch = ?"""
-    cursor.execute(select_query, (branch_,))
+    cursor.execute(select_query, (branch,))
     records = cursor.fetchall()
-    to_ret = None
+    to_ret = []
     for row in records:
-        to_ret += ("first name = ", row[1])
-        to_ret += ("last name = ", row[2])
-        to_ret += ("phone number = ", row[3])
+        to_ret += [("first name: ", str(row[1]), ", last name: ", str(row[2]), ", phone number: ", str(row[3]))]
+        # print("last name = ", row[2])
+        # print("phone number = ", row[3])
     cursor.close()
 
     # close our connection
@@ -270,6 +270,26 @@ def get_customer_geo_area_by_id(customer_id_):
     return to_ret
 
 
+def get_customer_address_by_id(customer_id_):
+    # connect to database
+    connection = sqlite3.connect('returns.db')
+
+    # create a cursor
+    cursor = connection.cursor()
+
+    sql_query = """
+           SELECT address 
+           FROM customers 
+           WHERE customer_id = ? 
+           AND active = 'Y' """
+
+    to_ret = cursor.execute(sql_query, customer_id_).fetchone()
+    # close our connection
+    connection.close()
+
+    return to_ret
+
+
 def get_all_drivers_who_drove_a_specific_van(van_id):
     # connect to database
     connection = sqlite3.connect('returns.db')
@@ -277,14 +297,15 @@ def get_all_drivers_who_drove_a_specific_van(van_id):
     # create a cursor
     cursor = connection.cursor()
 
-    cursor.execute("""
+    sql_query = """
       SELECT first_name, last_name
       FROM drivers
       WHERE driver_ID  IN (SELECT driver_ID 
       FROM vans 
-      WHERE %(van_id))s = %(van_id)s""", {"van_id": van_id})
+      WHERE van_ID = ? 
+      AND active = 'Y')"""
 
-    to_ret = cursor.fetchall()
+    to_ret = cursor.execute(sql_query, (van_id,)).fetchall()
 
     # commit our command
     connection.commit()
@@ -464,9 +485,6 @@ def check_if_consignment_returned(barcode):
 
     sql_query = """SELECT returned FROM Consignments WHERE barcode=?"""
     return cursor.execute(sql_query, barcode).fetchone()
-
-
-
 
 
 # UPDATE
@@ -658,6 +676,3 @@ def delete_consignment_from_db(consignment_to_delete):
     connection.commit()
     # close our connection
     connection.close()
-
-
-
